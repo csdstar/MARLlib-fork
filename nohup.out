@@ -1,0 +1,34 @@
+Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple
+Collecting setuptools==65.5.0
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/41/82/7f54bbfe5c247a8c9f78d8d1d7c051847bcb78843c397b866dba335c1e88/setuptools-65.5.0-py3-none-any.whl (1.2MB)
+Collecting pip==21
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/de/47/58b9f3e6f611dfd17fb8bd9ed3e6f93b7ee662fb85bdfee3565e8979ddf7/pip-21.0-py3-none-any.whl (1.5MB)
+WARNING: The candidate selected for download or install is a yanked version: 'wheel' candidate (version 0.38.0 at https://pypi.tuna.tsinghua.edu.cn/packages/bb/ae/02bad7c64ca060e037869584242729796a5eda0376bb944a3e03f4d9491b/wheel-0.38.0-py3-none-any.whl#sha256=12be48b0b8684b51e8c957e775101fe7aea8cef251910f446fff3e163003b514 (from https://pypi.tuna.tsinghua.edu.cn/simple/wheel/) (requires-python:>=3.7))
+Reason for being yanked: Circular dependency with setuptools on --no-binary=:all:
+Collecting wheel==0.38.0
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/bb/ae/02bad7c64ca060e037869584242729796a5eda0376bb944a3e03f4d9491b/wheel-0.38.0-py3-none-any.whl
+Collecting protobuf==3.20.3
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/da/e4/4d62585593e9f962cb02614534f62f930de6a80a0a3784282094a01919b2/protobuf-3.20.3-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.whl (1.0MB)
+Collecting ray==1.8.0
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/31/00/72a1b0ac45b6ab82581ee658d7a05b44ce8a8eebe21148a82da038cfe4d1/ray-1.8.0-cp38-cp38-manylinux2014_x86_64.whl (54.4MB)
+ERROR: Operation cancelled by user
+WARNING: You are using pip version 19.3.1; however, version 25.0.1 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
+
+Usage:   
+  pip install [options] <requirement specifier> [package-index-options] ...
+  pip install [options] -r <requirements file> [package-index-options] ...
+  pip install [options] [-e] <vcs project url> ...
+  pip install [options] [-e] <local project path> ...
+  pip install [options] <archive url/path> ...
+
+no such option: -y
+
+Usage:   
+  pip install [options] <requirement specifier> [package-index-options] ...
+  pip install [options] -r <requirements file> [package-index-options] ...
+  pip install [options] [-e] <vcs project url> ...
+  pip install [options] [-e] <local project path> ...
+  pip install [options] <archive url/path> ...
+
+no such option: -y
