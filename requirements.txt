@@ -6,7 +6,7 @@ ray==1.8.0
 ray[tune]==1.8.0
 ray[rllib]==1.8.0
 icecream==2.1.3
-torch==1.9.0
+# torch==1.9.0 这里改成用 cpu 版了
 pettingzoo==1.12.0
 pettingzoo[mpe]==1.12.0
 supersuit==3.2.0
