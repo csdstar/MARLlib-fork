@@ -36,11 +36,14 @@ mappo = marl.algos.mappo(hyperparam_source="mpe")
 model = marl.build_model(env, mappo, {"core_arch": "mlp", "encode_layer": "128-256"})
 
 # rendering
-mappo.render(env, model,
-             stop={'timesteps_total': 40000000},
-             restore_path={'params_path': "checkpoint/params.json",  # experiment configuration
-                           'model_path': "checkpoint/checkpoint-6250"},  # checkpoint path
-             num_workers=10,
-             local_mode=False,
-             share_policy="all",
-             checkpoint_end=True)
+mappo.render(
+    env,
+    model,
+    stop={'timesteps_total': 40000000},
+    restore_path={'params_path': "checkpoint/params.json",  # experiment configuration
+                  'model_path': "checkpoint/checkpoint-6250"},  # checkpoint path
+    num_workers=10,
+    local_mode=False,
+    share_policy="all",
+    checkpoint_end=True
+)

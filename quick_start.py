@@ -8,6 +8,7 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from marllib import marl
+from marllib.marl.algos.utils.rollout import rollout
 
 print("=== Step 1: 创建环境 ===")
 env = marl.make_env(environment_name="mpe", map_name="simple_spread")
