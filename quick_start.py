@@ -63,19 +63,19 @@ params_path = os.path.join(latest_trial_dir, "params.json")
 
 print(f"使用最新的 checkpoint: {checkpoint_path}")
 # 直接用 marl 提供的渲染接口
-# render() 会创建视频文件保存到 log_dir/render 文件夹
+env_tuple = (env, env_config)
 mappo.render(
-    env,
+    env_tuple,
     model,
     restore_path={
         "model_path": checkpoint_path,
         "params_path": params_path,
-        'render': True      # 是否进行渲染
+        'render': True  # 是否进行渲染
     },  # 用刚刚训练好的 checkpoint
     video_dir="./logs/mappo_simple_spread/render_video",
     local_mode=True,  # 强制单进程运行，方便渲染
-    checkpoint_end=False,   # 不在末尾再保存 checkpoint
-    share_policy="all",     # 所有 agent 共享一个策略
+    checkpoint_end=False,  # 不在末尾再保存 checkpoint
+    share_policy="all",  # 所有 agent 共享一个策略
     num_gpus=0  # 禁用 GPU，否则找不到就报错
 )
 
