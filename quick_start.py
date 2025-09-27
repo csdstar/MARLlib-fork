@@ -33,20 +33,26 @@ trainer = mappo.fit(
 )
 
 print("=== Step 4: 训练完成，开始渲染 ===")
-# 手动定位最新的 checkpoint 文件夹
-exp_dir = "./exp_results"
-algo_prefix = "mappo_mlp_simple_spread"
-exp_subdirs = [os.path.join(exp_dir, d) for d in os.listdir(exp_dir) if algo_prefix in d]
-if not exp_subdirs:
-    raise RuntimeError("没有找到训练结果文件夹，请检查 exp_results 是否存在")
+# 自动搜索最新的训练结果文件夹
+exp_root = "./exp_results/mappo_mlp_simple_spread"
+trial_dirs = sorted(
+    glob.glob(os.path.join(exp_root, "MAPPOTrainer_*")),
+    key=os.path.getmtime
+)
+if not trial_dirs:
+    raise RuntimeError(f"未找到任何 MAPPOTrainer_* 文件夹，请确认训练是否成功")
+latest_trial_dir = trial_dirs[-1]
 
-latest_exp = max(exp_subdirs, key=os.path.getmtime)
-checkpoint_root = os.path.join(latest_exp, "checkpoint_000001")
-if not os.path.exists(checkpoint_root):
-    raise RuntimeError(f"未找到 checkpoint 文件夹: {checkpoint_root}")
+# 在该 trial 目录中找最新的 checkpoint 文件夹
+checkpoint_dirs = sorted(
+    glob.glob(os.path.join(latest_trial_dir, "checkpoint_*")),
+    key=os.path.getmtime
+)
+if not checkpoint_dirs:
+    raise RuntimeError(f"未找到 checkpoint 文件夹: {latest_trial_dir}")
+checkpoint_path = checkpoint_dirs[-1]  # 最新的一个 checkpoint
 
-print(f"找到 checkpoint 路径: {checkpoint_root}")
-
+print(f"使用最新的 checkpoint: {checkpoint_path}")
 # 直接用 marl 提供的渲染接口
 # render() 会创建视频文件保存到 log_dir/render 文件夹
 mappo.render(
