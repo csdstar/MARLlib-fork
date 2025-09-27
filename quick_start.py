@@ -26,7 +26,7 @@ model = marl.build_model(env, mappo, model_preference)
 
 print("=== Step 3: 开始训练 ===")
 trainer = mappo.fit(
-    env_config,
+    env,
     model,
     stop={"timesteps_total": 10000},  # 训练少一点即可，快速出结果
     checkpoint_freq=1,
