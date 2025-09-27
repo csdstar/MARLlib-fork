@@ -162,9 +162,14 @@ def run_cc(exp_info, env, model, stop=None):
     ### experiment config ###
     #########################
 
+    from marllib import marl
     run_config = {
         "seed": int(exp_info["seed"]),
-        "env": exp_info["env"] + "_" + exp_info["env_args"]["map_name"],
+        "env": lambda config: marl.make_env(
+            environment_name=exp_info["env"],
+            map_name=exp_info["env_args"]["map_name"],
+            force_coop=exp_info["env_args"].get("force_coop", False)
+        )[0],
         "num_gpus_per_worker": exp_info["num_gpus_per_worker"],
         "num_gpus": exp_info["num_gpus"],
         "num_workers": exp_info["num_workers"],

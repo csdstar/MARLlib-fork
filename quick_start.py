@@ -21,7 +21,10 @@ def env_creator(config):
     return marl.make_env(environment_name="mpe", map_name="simple_spread", force_coop=True)[0]
 
 
-register_env("mpe_simple_spread", env_creator)
+register_env("mpe_simple_spread-v0", env_creator)
+
+import gym
+print(gym.envs.registry.keys())
 
 print("=== Step 2: 初始化MAPPO算法 ===")
 mappo = marl.algos.mappo(hyperparam_source="mpe")
