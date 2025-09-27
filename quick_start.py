@@ -16,13 +16,10 @@ from marllib.envs.global_reward_env.mpe_fcoop import RLlibMPE
 print("=== Step 1: 创建环境 ===")
 # 创建 env_args
 env_args = {"map_name": "simple_spread", "force_coop": True}
-env_instance = RLlibMPE(ENV_REGISTRY["simple_spread"], env_args)
-
 
 # 手动注册一个合法 Gym ID
 def env_creator(config):
     return RLlibMPE(ENV_REGISTRY["simple_spread"], env_args)
-
 
 register_env("mpe_simple_spread-v0", env_creator)
 
@@ -30,11 +27,10 @@ register_env("mpe_simple_spread-v0", env_creator)
 env_config = {
     "env": "mpe_simple_spread-v0",  # 直接用你注册的 id
     "env_args": env_args,
-    "force_coop": True,
+    "force_coop": True
 }
 
-# env = marl.make_env(environment_name="mpe", map_name="simple_spread", force_coop=True)
-env = (env_instance, env_config)
+env = marl.make_env(environment_name="mpe", map_name="simple_spread", force_coop=True)
 
 print("=== Step 2: 初始化MAPPO算法 ===")
 mappo = marl.algos.mappo(hyperparam_source="mpe")
