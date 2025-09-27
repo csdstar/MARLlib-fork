@@ -22,8 +22,7 @@ mappo = marl.algos.mappo(hyperparam_source="mpe")
 
 print("=== Step 2.5: 构建模型 ===")
 model_preference = {"core_arch": "mlp", "encode_layer": "128-256"}
-# 训练时可以不提前创建 env，mappo.fit 内部会自动创建
-model = marl.build_model(env_config, mappo, model_preference)
+model = marl.build_model(env, mappo, model_preference)
 
 print("=== Step 3: 开始训练 ===")
 trainer = mappo.fit(
