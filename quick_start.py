@@ -65,7 +65,7 @@ print(f"使用最新的 checkpoint: {checkpoint_path}")
 # 直接用 marl 提供的渲染接口
 # render() 会创建视频文件保存到 log_dir/render 文件夹
 mappo.render(
-    env=(env, env_config),
+    env=env,
     model=model,
     restore_path={
         "model_path": checkpoint_path,
