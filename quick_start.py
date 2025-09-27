@@ -11,6 +11,10 @@ from marllib import marl
 
 print("=== Step 1: 创建环境 ===")
 env = marl.make_env(environment_name="mpe", map_name="simple_spread")
+env_config = {
+    "environment_name": "mpe",
+    "map_name": "simple_spread"
+}
 
 print("=== Step 2: 初始化MAPPO算法 ===")
 mappo = marl.algos.mappo(hyperparam_source="mpe")
@@ -22,8 +26,8 @@ model_class, model_config = marl.build_model(env, mappo, model_preference)
 print("=== Step 3: 开始训练 ===")
 model = (model_class, model_config)
 trainer = mappo.fit(
-    env,
-    model,
+    env=(env, env_config),
+    model=model,
     stop={"timesteps_total": 10000},  # 训练少一点即可，快速出结果
     checkpoint_freq=1,
     share_policy="all",
