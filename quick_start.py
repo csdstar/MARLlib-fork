@@ -26,8 +26,8 @@ model_class, model_config = marl.build_model(env, mappo, model_preference)
 print("=== Step 3: 开始训练 ===")
 model = (model_class, model_config)
 trainer = mappo.fit(
-    env=(env, env_config),
-    model=model,
+    env,
+    model,
     stop={"timesteps_total": 10000},  # 训练少一点即可，快速出结果
     checkpoint_freq=1,
     share_policy="all",
@@ -65,8 +65,8 @@ print(f"使用最新的 checkpoint: {checkpoint_path}")
 # 直接用 marl 提供的渲染接口
 # render() 会创建视频文件保存到 log_dir/render 文件夹
 mappo.render(
-    env,
-    model,
+    env=(env, env_config),
+    model=model,
     restore_path={
         "model_path": checkpoint_path,
         "params_path": params_path
