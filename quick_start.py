@@ -10,12 +10,8 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from marllib import marl
 
 print("=== Step 1: 创建环境 ===")
-env_config = {
-    "environment_name": "mpe",
-    "map_name": "simple_spread"
-}
 
-env = marl.make_env(env_config, force_coop=True)
+env, env_config = marl.make_env(environment_name="mpe", map_name="simple_spread", force_coop=True)
 
 print("=== Step 1.5: 查看创建的环境是否有对应接口函数")
 print("env info=", env.get_env_info())
