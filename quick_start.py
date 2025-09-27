@@ -21,10 +21,9 @@ mappo = marl.algos.mappo(hyperparam_source="mpe")
 
 print("=== Step 2.5: 构建模型 ===")
 model_preference = {"core_arch": "mlp", "encode_layer": "128-256"}
-model_class, model_config = marl.build_model(env, mappo, model_preference)
+model = marl.build_model(env, mappo, model_preference)
 
 print("=== Step 3: 开始训练 ===")
-model = (model_class, model_config)
 trainer = mappo.fit(
     env,
     model,
@@ -65,8 +64,8 @@ print(f"使用最新的 checkpoint: {checkpoint_path}")
 # 直接用 marl 提供的渲染接口
 # render() 会创建视频文件保存到 log_dir/render 文件夹
 mappo.render(
-    env=env,
-    model=model,
+    env,
+    model,
     restore_path={
         "model_path": checkpoint_path,
         "params_path": params_path
