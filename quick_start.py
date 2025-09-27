@@ -54,13 +54,19 @@ if not checkpoint_dirs:
     raise RuntimeError(f"未找到 checkpoint 文件夹: {latest_trial_dir}")
 checkpoint_path = checkpoint_dirs[-1]  # 最新的一个 checkpoint
 
+# params.json 文件路径
+params_path = os.path.join(latest_trial_dir, "params.json")
+
 print(f"使用最新的 checkpoint: {checkpoint_path}")
 # 直接用 marl 提供的渲染接口
 # render() 会创建视频文件保存到 log_dir/render 文件夹
 mappo.render(
     env,
     model,
-    restore_path={"model_path": checkpoint_path},  # 用刚刚训练好的 checkpoint
+    restore_path={
+        "model_path": checkpoint_path,
+        "params_path": params_path
+    },  # 用刚刚训练好的 checkpoint
     render_num=1,  # 渲染1个 episode
     save_gif=True,  # 保存为 gif/mp4
     save_dir="./logs/mappo_simple_spread/render",
