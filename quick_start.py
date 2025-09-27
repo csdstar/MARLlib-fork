@@ -25,8 +25,9 @@ model_preference = {"core_arch": "mlp", "encode_layer": "128-256"}
 model = marl.build_model(env, mappo, model_preference)
 
 print("=== Step 3: 开始训练 ===")
+env_tuple = (env, env_config)
 trainer = mappo.fit(
-    env,
+    env_tuple,
     model,
     stop={"timesteps_total": 10000},  # 训练少一点即可，快速出结果
     checkpoint_freq=1,
@@ -63,9 +64,8 @@ params_path = os.path.join(latest_trial_dir, "params.json")
 
 print(f"使用最新的 checkpoint: {checkpoint_path}")
 # 直接用 marl 提供的渲染接口
-env_tuple = (env, env_config)
 mappo.render(
-    env_tuple,
+    env,
     model,
     restore_path={
         "model_path": checkpoint_path,
