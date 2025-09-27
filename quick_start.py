@@ -21,7 +21,7 @@ register(
     entry_point=lambda **kwargs: RLlibMPE(ENV_REGISTRY["simple_spread"], env_args)
 )
 
-env = marl.make_env(environment_name="mpe", map_name="simple_spread-v0", force_coop=True)
+env = marl.make_env(environment_name="mpe", map_name="simple_spread", force_coop=True)
 
 
 
