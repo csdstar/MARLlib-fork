@@ -29,7 +29,7 @@ trainer = mappo.fit(
     share_policy="all",
     log_dir="./logs/mappo_simple_spread",
     checkpoint_end=True,
-    num_workers=2
+    num_workers=10
 )
 
 print("=== Step 4: 训练完成，开始渲染 ===")
