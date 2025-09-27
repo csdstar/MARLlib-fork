@@ -60,7 +60,7 @@ print(f"使用最新的 checkpoint: {checkpoint_path}")
 mappo.render(
     env,
     model,
-    restore_path=checkpoint_path,  # 用刚刚训练好的 checkpoint
+    restore_path={"model_path": checkpoint_path},  # 用刚刚训练好的 checkpoint
     render_num=1,  # 渲染1个 episode
     save_gif=True,  # 保存为 gif/mp4
     save_dir="./logs/mappo_simple_spread/render",
