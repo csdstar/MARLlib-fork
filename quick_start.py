@@ -18,7 +18,7 @@ env_config = {
 env = marl.make_env(**env_config)
 
 print("=== Step 2: 初始化MAPPO算法 ===")
-mappo = marl.algos.mappo(hyperparam_source="mpe", env_config=env_config)
+mappo = marl.algos.mappo(hyperparam_source="mpe")
 
 print("=== Step 2.5: 构建模型 ===")
 model_preference = {"core_arch": "mlp", "encode_layer": "128-256"}
