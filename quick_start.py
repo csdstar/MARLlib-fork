@@ -10,11 +10,9 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from marllib import marl
 
 print("=== Step 1: 创建环境 ===")
+env = marl.make_env(environment_name="mpe", map_name="simple_spread", force_coop=True)
 
-env, env_config = marl.make_env(environment_name="mpe", map_name="simple_spread", force_coop=True)
 
-print("=== Step 1.5: 查看创建的环境是否有对应接口函数")
-print("env info=", env.get_env_info())
 
 print("=== Step 2: 初始化MAPPO算法 ===")
 mappo = marl.algos.mappo(hyperparam_source="mpe")
@@ -24,9 +22,8 @@ model_preference = {"core_arch": "mlp", "encode_layer": "128-256"}
 model = marl.build_model(env, mappo, model_preference)
 
 print("=== Step 3: 开始训练 ===")
-env_tuple = (env, env_config)
 trainer = mappo.fit(
-    env_tuple,
+    env,
     model,
     stop={"timesteps_total": 10000},  # 训练少一点即可，快速出结果
     checkpoint_freq=1,
@@ -64,7 +61,7 @@ params_path = os.path.join(latest_trial_dir, "params.json")
 print(f"使用最新的 checkpoint: {checkpoint_path}")
 # 直接用 marl 提供的渲染接口
 mappo.render(
-    env_tuple,
+    env,
     model,
     restore_path={
         "model_path": checkpoint_path,
