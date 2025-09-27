@@ -8,9 +8,20 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from marllib import marl
+from gym.envs.registration import register
+from marllib.envs.base_env import ENV_REGISTRY, RLlibMPE
 
 print("=== Step 1: 创建环境 ===")
-env = marl.make_env(environment_name="mpe", map_name="simple_spread", force_coop=True)
+# 创建 env_args
+env_args = {"map_name": "simple_spread", "force_coop": True}
+
+# 注册一个合法 Gym ID
+register(
+    id="mpe_simple_spread-v0",
+    entry_point=lambda **kwargs: RLlibMPE(ENV_REGISTRY["simple_spread"], env_args)
+)
+
+env = marl.make_env(environment_name="mpe", map_name="simple_spread-v0", force_coop=True)
 
 
 
