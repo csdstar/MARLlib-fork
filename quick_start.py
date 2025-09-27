@@ -33,19 +33,26 @@ trainer = mappo.fit(
 )
 
 print("=== Step 4: 训练完成，开始渲染 ===")
-# 取出最新的 checkpoint 路径
-checkpoint_path = trainer.get_best_checkpoint(
-    trial=trainer.get_best_trial(metric="episode_reward_mean", mode="max"),
-    metric="episode_reward_mean",
-    mode="max"
-)
+# 手动定位最新的 checkpoint 文件夹
+exp_dir = "./exp_results"
+algo_prefix = "mappo_mlp_simple_spread"
+exp_subdirs = [os.path.join(exp_dir, d) for d in os.listdir(exp_dir) if algo_prefix in d]
+if not exp_subdirs:
+    raise RuntimeError("没有找到训练结果文件夹，请检查 exp_results 是否存在")
+
+latest_exp = max(exp_subdirs, key=os.path.getmtime)
+checkpoint_root = os.path.join(latest_exp, "checkpoint_000001")
+if not os.path.exists(checkpoint_root):
+    raise RuntimeError(f"未找到 checkpoint 文件夹: {checkpoint_root}")
+
+print(f"找到 checkpoint 路径: {checkpoint_root}")
 
 # 直接用 marl 提供的渲染接口
 # render() 会创建视频文件保存到 log_dir/render 文件夹
 mappo.render(
     env,
     model,
-    restore_path=checkpoint_path,  # 用刚刚训练好的 checkpoint
+    restore_path=checkpoint_root,  # 用刚刚训练好的 checkpoint
     render_num=1,  # 渲染1个 episode
     save_gif=True,  # 保存为 gif/mp4
     save_dir="./logs/mappo_simple_spread/render",
