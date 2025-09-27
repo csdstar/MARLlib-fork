@@ -15,7 +15,7 @@ env_config = {
     "map_name": "simple_spread"
 }
 
-env = marl.make_env(**env_config)
+env = marl.make_env(environment_name="mpe", map_name="simple_spread", force_coop=True)
 
 print("=== Step 2: 初始化MAPPO算法 ===")
 mappo = marl.algos.mappo(hyperparam_source="mpe")
@@ -69,12 +69,11 @@ mappo.render(
     model,
     restore_path={
         "model_path": checkpoint_path,
-        "params_path": params_path
+        "params_path": params_path,
+        'render': True      # 是否进行渲染
     },  # 用刚刚训练好的 checkpoint
     render_num=1,  # 渲染1个 episode
-    save_gif=True,  # 保存为 gif/mp4
-    save_dir="./logs/mappo_simple_spread/render",
-    fps=30,
+    video_dir="./logs/mappo_simple_spread/render_video",
     local_mode=True,  # 强制单进程运行，方便渲染
     num_gpus=0  # 禁用 GPU，否则找不到就报错
 )
