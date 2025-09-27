@@ -29,16 +29,23 @@ trainer = mappo.fit(
     share_policy="all",
     log_dir="./logs/mappo_simple_spread",
     checkpoint_end=True,
-    num_workers=10
+    num_workers=25
 )
 
 print("=== Step 4: 训练完成，开始渲染 ===")
+# 取出最新的 checkpoint 路径
+checkpoint_path = trainer.get_best_checkpoint(
+    trial=trainer.get_best_trial(metric="episode_reward_mean", mode="max"),
+    metric="episode_reward_mean",
+    mode="max"
+)
+
 # 直接用 marl 提供的渲染接口
 # render() 会创建视频文件保存到 log_dir/render 文件夹
 mappo.render(
     env,
     model,
-    restore_path=trainer,  # 用刚刚训练好的 checkpoint
+    restore_path=checkpoint_path,  # 用刚刚训练好的 checkpoint
     render_num=1,  # 渲染1个 episode
     save_gif=True,  # 保存为 gif/mp4
     save_dir="./logs/mappo_simple_spread/render",
