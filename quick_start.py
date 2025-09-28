@@ -24,12 +24,12 @@ print("=== Step 3: 开始训练 ===")
 trainer = mappo.fit(
     env,
     model,
-    stop={"timesteps_total": 50000},
+    stop={"timesteps_total": 10000},
     checkpoint_freq=1,
     share_policy="all",
     log_dir="./logs/mappo_simple_spread",
     checkpoint_end=True,
-    num_workers=25
+    num_workers=1
 )
 
 print("=== 完成 ===")
