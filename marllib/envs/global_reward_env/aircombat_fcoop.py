@@ -1,7 +1,7 @@
 import numpy as np
 from marllib.envs.base_env.aircombat import RLlibCloseAirCombatEnv
 
-
+# 广播式奖励的环境包装器，继承自base类，但会有特殊的reward处理
 class RLlibCloseAirCombatEnv_FCOOP(RLlibCloseAirCombatEnv):
 
     def __init__(self, env_config):

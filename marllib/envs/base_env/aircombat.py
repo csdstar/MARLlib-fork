@@ -146,7 +146,7 @@ class RLlibCloseAirCombatEnv(MultiAgentEnv):
         return obs, rewards, done, {}
 
     def close(self):
-        """关闭环境，释放资源（MARLlib接口要求）"""
+        """关闭环境，释放资源（非MARLlib接口要求）"""
         self.env.close()
 
     def get_env(self, env_args):
@@ -167,7 +167,7 @@ class RLlibCloseAirCombatEnv(MultiAgentEnv):
             raise ValueError("Can not support the " +
                              task + "environment." +
                              "\nMARLlib is built for multi-agent settings")
-        elif task == "MultipleCombat":  # 多机空战场景（支持）
+        elif task == "MultipleCombat":  # 多机空战场景（在拓展包中实现）
             env = MultipleCombatEnv(scenario)
         else:
             raise NotImplementedError("Can not support the " +

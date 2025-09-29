@@ -4,10 +4,12 @@ from .env_base import BaseEnv
 from ..tasks.multiplecombat_task import HierarchicalMultipleCombatShootTask, HierarchicalMultipleCombatTask, MultipleCombatTask
 from ..tasks.multiplecombat_vs_baseline_task import HierarchicalMultipleCombatVsBaselineTask, MultipleCombatVsBaselineTask
 
+
 class MultipleCombatEnv(BaseEnv):
     """
     MultipleCombatEnv is an multi-player competitive environment.
     """
+
     def __init__(self, config_name: str):
         super().__init__(config_name)
         # Env-Specific initialization here!
