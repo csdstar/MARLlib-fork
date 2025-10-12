@@ -77,79 +77,108 @@ def make_env(
         **env_params
 ) -> Tuple[MultiAgentEnv, Dict]:
     """
+    创建环境
     construct the environment and register.
     Args:
         :param environment_name: name of the environment
+        环境名
         :param map_name: name of the scenario
+        场景名
         :param force_coop: enforce the reward return of the environment to be global
+        是否强制启用“全局奖励模式”，用于集中式训练
         :param abs_path: env configuration path
+        指定环境配置文件的绝对路径
         :param env_params: parameters that can be pass to the environment for customizing the environment
+        运行时传入的额外环境参数
 
     Returns:
         Tuple[MultiAgentEnv, Dict]: env instance & env configuration dict
     """
+    # 确定配置文件路径
     if abs_path != "":
+        # 用户自定义路径
         env_config_file_path = os.path.join(os.path.dirname(__file__), abs_path)
     else:
-        # default config
-        env_config_file_path = os.path.join(os.path.dirname(__file__),
-                                            "../envs/base_env/config/{}.yaml".format(environment_name))
+        # 默认路径：envs/base_env/config/<environment_name>.yaml
+        env_config_file_path = os.path.join(
+            os.path.dirname(__file__),
+            f"../envs/base_env/config/{environment_name}.yaml"
+        )
 
+    # 加载 YAML 配置文件
     with open(env_config_file_path, "r") as f:
         env_config_dict = yaml.load(f, Loader=yaml.FullLoader)
         f.close()
 
-    # update function-fixed config
+    # 更新配置中 env_args 参数（合并默认配置与用户传入的 env_params）
+    # dict_update 是框架内定义的工具函数，支持递归合并字典
     env_config_dict["env_args"] = dict_update(env_config_dict["env_args"], env_params, True)
 
-    # user commandline config
+    # 从命令行中解析以 "--env_args.xxx=yyy" 形式传入的参数
+    # SYSPARAMs 是全局变量，记录启动时命令行参数
     user_env_args = {}
     for param in SYSPARAMs:
         if param.startswith("--env_args"):
             key, value = param.split(".")[1].split("=")
             user_env_args[key] = value
 
-    # update commandline config
+    # 将命令行参数合并进配置
     env_config_dict["env_args"] = dict_update(env_config_dict["env_args"], user_env_args, True)
+
+    # 添加场景名和是否强制全局奖励标志
     env_config_dict["env_args"]["map_name"] = map_name
     env_config_dict["force_coop"] = force_coop
 
-    # combine with exp running config
+    # 统一转换为 Ray 训练格式（如添加 num_workers、rollout_length 等参数）
     env_config = set_ray(env_config_dict)
 
-    # initialize env
+    # 检查该环境是否已在 ENV_REGISTRY 中注册
     env_reg_ls = []
     check_current_used_env_flag = False
     for env_n in ENV_REGISTRY.keys():
-        if isinstance(ENV_REGISTRY[env_n], str):  # error
-            info = [env_n, "Error", ENV_REGISTRY[env_n], "envs/base_env/config/{}.yaml".format(env_n),
-                    "envs/base_env/{}.py".format(env_n)]
+        if isinstance(ENV_REGISTRY[env_n], str):
+            # 若值是字符串，说明注册失败（可能是错误信息）
+            info = [env_n, "Error", ENV_REGISTRY[env_n],
+                    f"envs/base_env/config/{env_n}.yaml",
+                    f"envs/base_env/{env_n}.py"]
             env_reg_ls.append(info)
         else:
-            info = [env_n, "Ready", "Null", "envs/base_env/config/{}.yaml".format(env_n),
-                    "envs/base_env/{}.py".format(env_n)]
+            # 正常注册的环境
+            info = [env_n, "Ready", "Null",
+                    f"envs/base_env/config/{env_n}.yaml",
+                    f"envs/base_env/{env_n}.py"]
             env_reg_ls.append(info)
             if env_n == env_config["env"]:
                 check_current_used_env_flag = True
 
+    # 打印当前环境注册状态表
     print(tabulate(env_reg_ls,
                    headers=['Env_Name', 'Check_Status', "Error_Log", "Config_File_Location", "Env_File_Location"],
                    tablefmt='grid'))
 
+    # 若环境未被正确注册则报错退出
     if not check_current_used_env_flag:
         raise ValueError(
-            "environment \"{}\" not installed properly or not registered yet, please see the Error_Log below".format(
-                env_config["env"]))
+            f"environment \"{env_config['env']}\" not installed properly or not registered yet, "
+            f"please see the Error_Log below"
+        )
 
+    # 为当前环境生成注册名（如 "mpe_simple_spread"）
     env_reg_name = env_config["env"] + "_" + env_config["env_args"]["map_name"]
 
+    # 根据 force_coop 决定使用哪种注册表（普通 / 全局奖励）
     if env_config["force_coop"]:
-        register_env(env_reg_name, lambda _: COOP_ENV_REGISTRY[env_config["env"]](env_config["env_args"]))
+        # 全局奖励环境注册
+        register_env(env_reg_name,
+                     lambda _: COOP_ENV_REGISTRY[env_config["env"]](env_config["env_args"]))
         env = COOP_ENV_REGISTRY[env_config["env"]](env_config["env_args"])
     else:
-        register_env(env_reg_name, lambda _: ENV_REGISTRY[env_config["env"]](env_config["env_args"]))
+        # 普通环境注册
+        register_env(env_reg_name,
+                     lambda _: ENV_REGISTRY[env_config["env"]](env_config["env_args"]))
         env = ENV_REGISTRY[env_config["env"]](env_config["env_args"])
 
+    # 返回环境实例与配置字典
     return env, env_config
 
 

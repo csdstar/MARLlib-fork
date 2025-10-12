@@ -20,10 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import ray
 import gym
+import ray
 from ray import tune
-from ray.rllib.utils.framework import try_import_tf, try_import_torch
+from ray.rllib.utils.framework import try_import_torch
+
 from marllib.marl.algos.scripts import POlICY_REGISTRY
 from marllib.marl.common import recursive_dict_update, dict_update
 
@@ -54,17 +55,29 @@ def restore_config_update(exp_info, run_config, stop_config):
 
             stop_config = recursive_dict_update(stop_config, render_stop_config)
 
-
     return exp_info, run_config, stop_config, restore_config
 
 
 def run_cc(exp_info, env, model, stop=None):
+    """
+   运行集中式评价（Central Critic）类算法的训练流程。
+   参数:
+       exp_info: 实验信息字典，包含算法名、环境名、超参数、训练配置等
+       env: 由 make_env() 创建的多智能体环境实例
+       model: 模型配置（通常是网络结构定义）
+       stop: 可选的训练终止条件（覆盖默认条件）
+
+   返回:
+       results: 训练结果（Ray Tune 的返回对象）
+   """
+
+    # 初始化ray
     ray.init(local_mode=exp_info["local_mode"], num_gpus=exp_info["num_gpus"])
 
     ########################
     ### environment info ###
     ########################
-
+    # 从环境实例中提取元信息（观测空间、动作空间、智能体数量等）
     env_info = env.get_env_info()
     map_name = exp_info['env_args']['map_name']
     agent_name_ls = env.agents
@@ -75,14 +88,16 @@ def run_cc(exp_info, env, model, stop=None):
     ### space checking ###
     ######################
 
-    action_discrete = isinstance(env_info["space_act"], gym.spaces.Discrete) or isinstance(env_info["space_act"],
-                                                                                           gym.spaces.MultiDiscrete)
+    # 检查动作空间类型（离散 / 连续）
+    action_discrete = isinstance(env_info["space_act"], gym.spaces.Discrete) or isinstance(env_info["space_act"], gym.spaces.MultiDiscrete)
+    # 离散动作空间下不允许使用连续型算法 maddpg
     if action_discrete:
         if exp_info["algorithm"] in ["maddpg"]:
             raise ValueError(
                 "Algo -maddpg- only supports continuous action space, Env -{}- requires Discrete action space".format(
                     exp_info["env"]))
-    else:  # continuous
+    # 连续动作空间下不允许使用离散型算法 coma
+    else:
         if exp_info["algorithm"] in ["coma"]:
             raise ValueError(
                 "Algo -coma- only supports discrete action space, Env -{}- requires continuous action space".format(
@@ -92,16 +107,21 @@ def run_cc(exp_info, env, model, stop=None):
     ### policy sharing ###
     ######################
 
+    # 获取环境提供的智能体策略映射信息
     policy_mapping_info = env_info["policy_mapping_info"]
 
+    # 部分环境为多场景结构，因此需根据 map_name 选择具体配置
     if "all_scenario" in policy_mapping_info:
         policy_mapping_info = policy_mapping_info["all_scenario"]
     else:
         policy_mapping_info = policy_mapping_info[map_name]
 
-    # whether to agent level batch update when shared model parameter:
-    # True -> default_policy | False -> shared_policy
+    # 设置共享策略名：
+    # 若 agent_level_batch_update=True，则每个 agent 独立更新 -> default_policy
+    # 否则共享同一参数 -> shared_policy
     shared_policy_name = "default_policy" if exp_info["agent_level_batch_update"] else "shared_policy"
+
+    # ====== 策略共享模式判断 ======
     if exp_info["share_policy"] == "all":
         if not policy_mapping_info["all_agents_one_policy"]:
             raise ValueError("in {}, policy can not be shared, change it to 1. group 2. individual".format(map_name))
@@ -145,7 +165,7 @@ def run_cc(exp_info, env, model, stop=None):
     else:
         raise ValueError("wrong share_policy {}".format(exp_info["share_policy"]))
 
-    # if happo or hatrpo, force individual
+    # ====== 特殊算法强制独立策略 ======
     if exp_info["algorithm"] in ["happo", "hatrpo"]:
         if not policy_mapping_info["one_agent_one_policy"]:
             raise ValueError("in {}, agent number too large, we disable no sharing function".format(map_name))
@@ -162,6 +182,7 @@ def run_cc(exp_info, env, model, stop=None):
     ### experiment config ###
     #########################
 
+    # 构造 Ray Tune 的运行配置
     run_config = {
         "seed": int(exp_info["seed"]),
         "env": exp_info["env"] + "_" + exp_info["env_args"]["map_name"],
@@ -177,6 +198,7 @@ def run_cc(exp_info, env, model, stop=None):
         "simple_optimizer": False  # force using better optimizer
     }
 
+    # 训练停止条件
     stop_config = {
         "episode_reward_mean": exp_info["stop_reward"],
         "timesteps_total": exp_info["stop_timesteps"],
@@ -191,8 +213,8 @@ def run_cc(exp_info, env, model, stop=None):
     ### run script ###
     ##################
 
-    results = POlICY_REGISTRY[exp_info["algorithm"]](model, exp_info, run_config, env_info, stop_config,
-                                                     restore_config)
+    # 调用对应算法模块（从 POLICY_REGISTRY 中查找，如 mappo, maddpg, qmix 等）
+    results = POlICY_REGISTRY[exp_info["algorithm"]](model, exp_info, run_config, env_info, stop_config, restore_config)
 
     ray.shutdown()
 
