@@ -1,0 +1,39 @@
+algo: mappo
+
+algo_args:
+  gamma: 0.99
+  use_gae: True
+  gae_lambda: 0.95
+  clip_param: 0.2
+  ppo_epoch: 10
+  num_mini_batch: 4
+  entropy_coef: 0.01
+  value_loss_coef: 1.0
+  lr: 5.0e-4
+  eps: 1.0e-5
+  max_grad_norm: 0.5
+  use_clipped_value_loss: True
+  share_policy: all
+  use_centralized_V: True
+  use_recurrent_policy: False
+  hidden_size: 128
+  layer_N: 2
+  use_feature_normalization: True
+  use_linear_lr_decay: False
+  use_orthogonal_init: True
+  recurrent_N: 1
+  use_popart: False
+  data_chunk_length: 10
+
+model_args:
+  core_arch: mlp
+  encode_layer: "128-256"
+  act_fn: tanh
+  use_feature_normalization: True
+
+train_args:
+  buffer_size: 2000
+  batch_size: 64
+  num_env_steps: 1.0e6
+  episode_length: 200
+  num_agents: auto

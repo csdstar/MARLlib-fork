@@ -1,0 +1,16 @@
+algo_args:
+  batch_episode: 8
+  buffer_size: 2048
+  num_sgd_iter: 5
+  lr: 0.0005
+  gamma: 0.99
+  lambda: 0.95
+  clip_param: 0.2
+  use_gae: true
+  share_policy: true
+  use_rnn: true
+model_args:
+  use_gru: true
+  fcnet_hiddens: [64, 64]
+  rnn_hidden_dim: 128
+  use_global_state: true
